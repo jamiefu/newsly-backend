@@ -6,6 +6,11 @@ from flask_sqlalchemy import SQLAlchemy
 app = None
 db = None
 
+def load_from_env(app, *args):
+    for a in args:
+        app.config[a] = os.environ[a]
+
+
 def create_app():
     global app, db
     app = Flask(__name__)
