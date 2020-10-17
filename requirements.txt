@@ -7,6 +7,7 @@ cssselect==1.1.0
 feedfinder2==0.0.4
 feedparser==6.0.1
 Flask==1.1.2
+Flask-Cors==3.0.9
 Flask-SQLAlchemy==2.4.4
 idna==2.10
 itsdangerous==1.1.0

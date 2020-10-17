@@ -1,6 +1,7 @@
 import os
 from flask import Flask, session, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 
 app = None
@@ -37,7 +38,7 @@ def create_app():
     #     print("Loading secret configs from env")
 
 
-
+    CORS(app)
     #load database
     db = SQLAlchemy(app)
     from app.models import Article
