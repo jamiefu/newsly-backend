@@ -31,6 +31,10 @@ def get_stories():
                                     rows=rows)
     stories = {"query": query, "stories": []}
     for story in fetched_stories:
+        if Article.query.filter_by(title=story_json["title"]).all():
+            print(f"Skipping Duplicate: {story_json['title']}")
+            continue
+
         story_json = {}
         story_json["publish_date"] = story["publish_date"]
         story_json["title"] = story["title"]
@@ -53,15 +57,18 @@ def get_stories():
         story_json["tags"] = tags
         stories["stories"].append(story_json)
 
-        if not Article.query.filter_by(title=story_json["title"]).all():
-            new_article = Article()
-            new_article.populate_from_mc(story_json)
-            new_article.get_twitter_metadata()
-            db.session.add(new_article)
-            db.session.commit()
-            print(f"Added story: {story_json['title']}\n")
-        else:
-            print(f"Skipping Duplicate: {story_json['title']}")
+        new_article = Article()
+        new_article.populate_from_mc(story_json)
+        new_article.get_twitter_metadata()
+        db.session.add(new_article)
+        db.session.commit()
+        print(f"Added story: {story_json['title']}\n")
+
+            
+
+        
+
+        
 
         
 
