@@ -1,22 +1,28 @@
 import os
 from flask import Flask, session, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 
 app = None
 db = None
 
+def load_from_env(app, *args):
+    for a in args:
+        app.config[a] = os.environ[a]
+
+
 def create_app():
     global app, db
     app = Flask(__name__)
 
-    config_file = "../config.py"
     #load main config
-    if os.path.exists(config_file):
-        app.config.from_pyfile(config_file)
+    if os.path.exists("config.py"):
+        app.config.from_pyfile("../config.py")
     else:
-        load_from_env(application, 'SQLALCHEMY_DATABASE_URI',
-                                    'DEBUG') 
+        load_from_env(app, 'SQLALCHEMY_DATABASE_URI',
+                                    'DEBUG',
+                                    'PULL_FREQ') 
 
     # #load instance config
     # if os.path.exists(application.instance_path + "/config.py"):
@@ -33,7 +39,7 @@ def create_app():
     #     print("Loading secret configs from env")
 
 
-
+    CORS(app)
     #load database
     db = SQLAlchemy(app)
     from app.models import Article
@@ -47,9 +53,7 @@ def create_app():
     # application.secret_key = application.config['FLASK_SECRET_KEY']
 
     #register module blueprints
-    from app.mc_news import mc_news_bp
     from app.views import api_bp
-    app.register_blueprint(mc_news_bp)
     app.register_blueprint(api_bp)
     db.create_all()
 
