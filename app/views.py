@@ -2,7 +2,7 @@ import datetime
 from flask import Flask, request, jsonify, Blueprint
 from app import db
 from app.models import Article
-
+from app import app
 import mediacloud.api
 import datetime
 import re
@@ -31,9 +31,14 @@ def clear():
 
 
 @api_bp.route("/fetch_stories", methods=["GET"])
-def get_stories():
-    rows = request.args.get("n") # number of articles you want back
-    fetched_stories = mc.storyList(query, solr_filter=mc.dates_as_query_clause(datetime.date(2020,10,17), datetime.date(2020,10,18)),
+def fetch_stories():
+    rows = request.args.get("n", None) # number of articles you want back
+    return _load_mc_stories(rows)
+
+def _load_mc_stories(rows=None):
+    pull_freq = app.config["PULL_FREQ"]
+
+    fetched_stories = mc.storyList(query, solr_filter=mc.dates_as_query_clause(datetime.datetime.now() - datetime.timedelta(seconds=pull_freq), datetime.datetime.now()),
                                     rows=rows)
     stories = {"query": query, "stories": []}
     for story in fetched_stories:
@@ -75,3 +80,5 @@ def get_stories():
         db.session.add(new_article)
         db.session.commit()
         print(f"Added story: {story_json['title']}\n")
+
+    return jsonify(fetched_stories)
