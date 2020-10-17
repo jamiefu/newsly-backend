@@ -52,9 +52,7 @@ def create_app():
     # application.secret_key = application.config['FLASK_SECRET_KEY']
 
     #register module blueprints
-    from app.mc_news import mc_news_bp
     from app.views import api_bp
-    app.register_blueprint(mc_news_bp)
     app.register_blueprint(api_bp)
     db.create_all()
 
