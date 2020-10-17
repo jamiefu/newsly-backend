@@ -42,6 +42,8 @@ def get_stories():
             continue
 
         story_json = {}
+        story_json["source_name"] = story["media_name"]
+        story_json["source_url"] = story["media_url"]
         story_json["publish_date"] = story["publish_date"]
         story_json["title"] = story["title"]
         story_json["url"] = story["url"]
@@ -50,6 +52,10 @@ def get_stories():
         soup = BeautifulSoup(article.html, 'html.parser')
         description = soup.find("meta", property="og:description")['content']
         story_json["description"] = description
+
+        favicon = favicon = soup.find("link", rel="icon")['href']
+        story_json["favicon"] = favicon
+        
         article.parse()
         story_json["read_time"] = math.ceil(len(re.findall(r'\w+', article.text))/250)
         story_json["image"] = article.top_image
