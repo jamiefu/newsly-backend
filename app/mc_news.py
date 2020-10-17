@@ -5,6 +5,13 @@ from app import db
 from app.models import Article
 
 mc_news_bp = Blueprint("mc_news",__name__, url_prefix="/mc_news")
+from bs4 import BeautifulSoup
+
+from flask import Flask, request, jsonify
+from newspaper import Article
+
+app = Flask(__name__)
+app.config["DEBUG"] = True
 
 API_KEY = "0f789c2e1db3dc5aa6632d142df870b550a07334e57bd54726d6a762cf725ab9"
 
@@ -26,6 +33,11 @@ def get_stories():
         story_json["publish_date"] = story["publish_date"]
         story_json["title"] = story["title"]
         story_json["url"] = story["url"]
+        article = Article(story["url"])
+        article.download()
+        soup = BeautifulSoup(article.html, 'html.parser')
+        description = soup.find("meta", property="og:description")['content']
+        story_json["description"] = description
         tags = []
         story_tags = story['story_tags']
         for tag in story_tags:
