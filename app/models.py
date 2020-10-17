@@ -58,7 +58,7 @@ class Article(db.Model):
         self.url = data['url']
         self.news_metadata['tags'] = data['tags']
         self.news_metadata['read_time'] = data['read_time']
-        self.news_metadata['media_name'] = data['media_name']
+        self.news_metadata['source_name'] = data['source_name']
         self.news_metadata['source_url'] = data['source_url']
         self.content['description'] = data['description']
         self.content['image'] = data['image']
