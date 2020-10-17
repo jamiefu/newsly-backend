@@ -1,0 +1,1670 @@
+<html>
+
+<link href="../static/css/bootstrap.min.css" rel="stylesheet">
+<link href="../static/css/mr-sbu.css" rel="stylesheet">
+
+<head>
+    <title>MediaRank Filter News Sources</title>
+
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <script src="https://d3js.org/d3-time.v1.min.js"></script>
+    <script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+    <script src="../static/js/nv.d3.min.js"></script>
+    <script src="../static/js/jquery-3.2.1.min.js"></script>
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="../static/js/visualization.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https:////cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+
+    <link href="../static/css/nv.d3.css" rel="stylesheet" type="text/css">
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/mr-sbu.css" rel="stylesheet">
+
+    <script type="text/javascript">
+        //$(window).on("load", function() {
+         $(document).ready(function () {
+            document.getElementById("ranking-filter-table").style.visibility = "visible";
+            var t = $('#rftable').DataTable({
+                "lengthMenu": [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
+                "ordering": false,
+                "iDisplayLength": 10,
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }],
+                "order": [[1, 'asc']]
+            });
+
+            t.on('order.dt search.dt', function () {
+                t.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+    </script>
+</head>
+<body class="vsc-initialized">
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+        <div class="container">
+            <img class="normal" src="../static/image/white-logo2.png" alt="Logo">
+            <a href="/" style="color: white;font-weight: bold;">Home</a>
+            <a href="/" style="color: white;font-weight: bold;">All</a>
+            <!--<a href="/sectiontopics" style="color: white;font-weight: bold;">Topics</a>-->
+            <!--<a href="/countries" style="color: white;font-weight: bold;">Country</a>-->
+            <!--<a href="/languages" style="color: white;font-weight: bold;">Languages</a>-->
+            <a href="/filter" style="color: white;font-weight: bold;">Source Rankings</a>
+            <a href="/compare" style="color: white;font-weight: bold;">API</a>
+            <a href="/about" style="color: white;font-weight: bold;">About</a>
+        </div>
+    </nav>
+    
+    <div class="projectInfo" style="margin-top: 2cm;">
+    
+        <div class="container">
+            <!--<h1 style="text-align: center">News Sources Rankings</h1>-->
+    
+            <div class="btn-group" style="margin-left: 2cm; margin-top: 0.5cm">
+                <h2 style="margin-left: 8cm">News Sources Rankings</h2>
+                <!--<div class="dropdown" style="margin-left: 3cm; margin-right: 1cm">-->
+                <!--<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"-->
+                <!--data-toggle="dropdown"-->
+                <!--aria-haspopup="true" aria-expanded="false"-->
+                <!--style="">-->
+                <!--<span id="ddTopic">Topic</span>-->
+                <!--</button>-->
+                <!--<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="width: 20%">-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateTopic('All')">All</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateTopic('Business')">Business</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateTopic('Entertainment')">Entertainment</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateTopic('General')">General</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateTopic('Health')">Health</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateTopic('Science')">Science</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateTopic('Sports')">Sports</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateTopic('Technology')">Technology</a>-->
+                <!---->
+                <!--</div>-->
+                <!--</div>-->
+    
+                <!--<div class="dropdown" style="margin-left: 1cm; margin-right: 1cm">-->
+                <!--<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"-->
+                <!--data-toggle="dropdown"-->
+                <!--aria-haspopup="true" aria-expanded="false"-->
+                <!--style="">-->
+                <!--<span id="ddCountry">Country</span>-->
+                <!--</button>-->
+                <!--<div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton" style="width: 20%">-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('')"></a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('All')">All</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Argentina')">Argentina</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Australia')">Australia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Austria')">Austria</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Bangladesh')">Bangladesh</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Belgium')">Belgium</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Botswana')">Botswana</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Brazil')">Brazil</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Bulgaria')">Bulgaria</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Canada')">Canada</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Chile')">Chile</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('China')">China</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Colombia')">Colombia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Cuba')">Cuba</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Czech Republic')">Czech Republic</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Egypt')">Egypt</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Ethiopia')">Ethiopia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('France')">France</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Germany')">Germany</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Ghana')">Ghana</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Greece')">Greece</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Hong Kong')">Hong Kong</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Hungary')">Hungary</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('India')">India</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Indonesia')">Indonesia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Ireland')">Ireland</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Israel')">Israel</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Italy')">Italy</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Japan')">Japan</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Kenya')">Kenya</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Korea')">Korea</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Latvia')">Latvia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Lebanon')">Lebanon</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Lithuania')">Lithuania</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Malaysia')">Malaysia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Mexico')">Mexico</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Namibia')">Namibia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Netherlands')">Netherlands</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('New Zealand')">New Zealand</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Norway')">Norway</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Pakistan')">Pakistan</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Peru')">Peru</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Philippines')">Philippines</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Poland')">Poland</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Portugal')">Portugal</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Romania')">Romania</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Russia')">Russia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Senegal')">Senegal</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Serbia')">Serbia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Singapore')">Singapore</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Slovakia')">Slovakia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Slovenia')">Slovenia</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('South Africa')">South Africa</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Spain')">Spain</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Sweden')">Sweden</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Switzerland')">Switzerland</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Taiwan')">Taiwan</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Tanzania')">Tanzania</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Thailand')">Thailand</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Turkey')">Turkey</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Uganda')">Uganda</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Ukraine')">Ukraine</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('United Arab Emirates')">United Arab Emirates</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('United Kingdom')">United Kingdom</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('United States')">United States</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Venezuela')">Venezuela</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Vietnam')">Vietnam</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateCountry('Zimbabwe')">Zimbabwe</a>-->
+                <!---->
+                <!--</div>-->
+                <!--</div>-->
+    
+                <!--<div class="dropdown" style="margin-left: 1cm; margin-right: 0cm">-->
+                <!--<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"-->
+                <!--data-toggle="dropdown"-->
+                <!--aria-haspopup="true" aria-expanded="false"-->
+                <!--style="">-->
+                <!--<span id="ddLang">Language</span>-->
+                <!--</button>-->
+                <!--<div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton" style="width: 20%">-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Afrikaans')">Afrikaans</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Albanian')">Albanian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('All')">All</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Arabic')">Arabic</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Bengali')">Bengali</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Bulgarian')">Bulgarian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Catalan')">Catalan</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Chinese')">Chinese</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Croatian')">Croatian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Czech')">Czech</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Danish')">Danish</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Dutch')">Dutch</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('English')">English</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Estonian')">Estonian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Finnish')">Finnish</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('French')">French</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('German')">German</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Greek')">Greek</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Gujarati')">Gujarati</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Hebrew')">Hebrew</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Hindi')">Hindi</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Hungarian')">Hungarian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Indonesian')">Indonesian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Italian')">Italian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Japanese')">Japanese</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Kannada')">Kannada</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Korean')">Korean</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Latvian')">Latvian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Lithuanian')">Lithuanian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Macedonian')">Macedonian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Malayalam')">Malayalam</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Marathi')">Marathi</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Nepali')">Nepali</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Norwegian')">Norwegian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Persian')">Persian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Polish')">Polish</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Portuguese')">Portuguese</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Romanian')">Romanian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Russian')">Russian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Slovak')">Slovak</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Slovenian')">Slovenian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Somali')">Somali</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Spanish')">Spanish</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Swahili')">Swahili</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Swedish')">Swedish</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Tagalog')">Tagalog</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Taiwan')">Taiwan</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Tamil')">Tamil</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Telugu')">Telugu</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Thai')">Thai</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Turkish')">Turkish</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Ukranian')">Ukranian</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Urdu')">Urdu</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Vietnamese')">Vietnamese</a>-->
+                <!---->
+                <!--<a class="dropdown-item" href="#" onclick="updateLang('Welsh')">Welsh</a>-->
+                <!---->
+                <!--</div>-->
+                <!--</div>-->
+    
+            </div>
+        </div>
+    
+    </div>
+    
+    <div id="ranking-filter-table" style="margin: 0.5cm 4cm 2cm; visibility: visible;">
+        <div id="rftable_wrapper" class="dataTables_wrapper no-footer"><div class="dataTables_length" id="rftable_length"><label>Show <select name="rftable_length" aria-controls="rftable" class=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option><option value="200">200</option></select> entries</label></div><div id="rftable_filter" class="dataTables_filter"><label>Search:<input type="search" class="" placeholder="" aria-controls="rftable"></label></div><table id="rftable" style="color: black; margin-top: 0.5cm;" class="dataTable no-footer" role="grid" aria-describedby="rftable_info">
+            <thead>
+            <tr role="row"><th class="sorting_disabled" rowspan="1" colspan="1" style="width: 0px;"></th><th class="rankingFilterTable sorting_disabled" style="width: 413px;" rowspan="1" colspan="1">News Source Title</th><th class="rankingFilterTable sorting_disabled" style="width: 121px;" rowspan="1" colspan="1">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle dropdown-toggle-split" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                            News Topic
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="width: 20%">
+                            
+                            <a class="dropdown-item" href="#" onclick="updateTopic('All')">All</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateTopic('Business')">Business</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateTopic('Entertainment')">Entertainment</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateTopic('General')">General</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateTopic('Health')">Health</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateTopic('Science')">Science</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateTopic('Sports')">Sports</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateTopic('Technology')">Technology</a>
+                            
+                        </div>
+                    </div>
+                </th><th class="rankingFilterTable sorting_disabled" style="width: 263px;" rowspan="1" colspan="1">
+                    <div class="dropdown" style="">
+                        <button class="btn btn-primary dropdown-toggle dropdown-toggle-split" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                            Country
+                        </button>
+                        <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton">
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('')"></a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('All')">All</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Argentina')">Argentina</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Australia')">Australia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Austria')">Austria</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Bangladesh')">Bangladesh</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Belgium')">Belgium</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Botswana')">Botswana</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Brazil')">Brazil</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Bulgaria')">Bulgaria</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Canada')">Canada</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Chile')">Chile</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('China')">China</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Colombia')">Colombia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Cuba')">Cuba</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Czech Republic')">Czech Republic</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Egypt')">Egypt</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Ethiopia')">Ethiopia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('France')">France</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Germany')">Germany</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Ghana')">Ghana</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Greece')">Greece</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Hong Kong')">Hong Kong</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Hungary')">Hungary</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('India')">India</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Indonesia')">Indonesia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Ireland')">Ireland</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Israel')">Israel</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Italy')">Italy</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Japan')">Japan</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Kenya')">Kenya</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Korea')">Korea</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Latvia')">Latvia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Lebanon')">Lebanon</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Lithuania')">Lithuania</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Malaysia')">Malaysia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Mexico')">Mexico</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Namibia')">Namibia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Netherlands')">Netherlands</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('New Zealand')">New Zealand</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Norway')">Norway</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Pakistan')">Pakistan</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Peru')">Peru</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Philippines')">Philippines</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Poland')">Poland</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Portugal')">Portugal</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Romania')">Romania</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Russia')">Russia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Senegal')">Senegal</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Serbia')">Serbia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Singapore')">Singapore</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Slovakia')">Slovakia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Slovenia')">Slovenia</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('South Africa')">South Africa</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Spain')">Spain</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Sweden')">Sweden</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Switzerland')">Switzerland</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Taiwan')">Taiwan</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Tanzania')">Tanzania</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Thailand')">Thailand</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Turkey')">Turkey</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Uganda')">Uganda</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Ukraine')">Ukraine</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('United Arab Emirates')">United Arab Emirates</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('United Kingdom')">United Kingdom</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('United States')">United States</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Venezuela')">Venezuela</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Vietnam')">Vietnam</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateCountry('Zimbabwe')">Zimbabwe</a>
+                            
+                        </div>
+                    </div>
+                </th><th class="rankingFilterTable sorting_disabled" style="width: 265px;" rowspan="1" colspan="1">
+                    <div class="dropdown" style="">
+                        <button class="btn btn-primary dropdown-toggle dropdown-toggle-split" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                            Language
+                        </button>
+                        <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton" style="width: 20%">
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Afrikaans')">Afrikaans</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Albanian')">Albanian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('All')">All</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Arabic')">Arabic</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Bengali')">Bengali</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Bulgarian')">Bulgarian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Catalan')">Catalan</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Chinese')">Chinese</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Croatian')">Croatian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Czech')">Czech</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Danish')">Danish</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Dutch')">Dutch</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('English')">English</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Estonian')">Estonian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Finnish')">Finnish</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('French')">French</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('German')">German</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Greek')">Greek</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Gujarati')">Gujarati</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Hebrew')">Hebrew</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Hindi')">Hindi</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Hungarian')">Hungarian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Indonesian')">Indonesian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Italian')">Italian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Japanese')">Japanese</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Kannada')">Kannada</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Korean')">Korean</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Latvian')">Latvian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Lithuanian')">Lithuanian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Macedonian')">Macedonian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Malayalam')">Malayalam</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Marathi')">Marathi</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Nepali')">Nepali</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Norwegian')">Norwegian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Persian')">Persian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Polish')">Polish</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Portuguese')">Portuguese</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Romanian')">Romanian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Russian')">Russian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Slovak')">Slovak</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Slovenian')">Slovenian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Somali')">Somali</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Spanish')">Spanish</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Swahili')">Swahili</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Swedish')">Swedish</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Tagalog')">Tagalog</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Taiwan')">Taiwan</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Tamil')">Tamil</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Telugu')">Telugu</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Thai')">Thai</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Turkish')">Turkish</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Ukranian')">Ukranian</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Urdu')">Urdu</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Vietnamese')">Vietnamese</a>
+                            
+                            <a class="dropdown-item" href="#" onclick="updateLang('Welsh')">Welsh</a>
+                            
+                        </div>
+                    </div>
+                </th><th class="rankingFilterTable sorting_disabled" style="width: 115px;" rowspan="1" colspan="1">Media Rank</th><th class="rankingFilterTable sorting_disabled" style="width: 155px;" rowspan="1" colspan="1">Link</th></tr>
+            </thead>
+            
+            <tbody>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        <tr role="row" class="odd">
+                <td>1</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=mthai.com">mthai.com</a>
+                </td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">1066</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.mthai.com" target="_blank">mthai.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>2</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=mgronline.com">mgronline.com</a>
+                </td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">1442</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.mgronline.com" target="_blank">mgronline.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>3</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=siamsport.co.th">siamsport.co.th</a>
+                </td>
+                <td class="rankingFilterTable">Sports</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">1622</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.siamsport.co.th" target="_blank">siamsport.co.th</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>4</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=trueid.net">trueid.net</a>
+                </td>
+                <td class="rankingFilterTable">Sports</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">2141</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.trueid.net" target="_blank">trueid.net</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>5</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=thairath.co.th">thairath.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">2381</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.thairath.co.th" target="_blank">thairath.co.th</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>6</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=teenee.com">teenee.com</a>
+                </td>
+                <td class="rankingFilterTable">Entertainment</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">English</td>
+                <td class="rankingFilterTable">2461</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.teenee.com" target="_blank">teenee.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>7</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=dailynews.co.th">dailynews.co.th</a>
+                </td>
+                <td class="rankingFilterTable">Business</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">English</td>
+                <td class="rankingFilterTable">2488</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.dailynews.co.th" target="_blank">dailynews.co.th</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>8</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=khaosod.co.th">khaosod.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">3025</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.khaosod.co.th" target="_blank">khaosod.co.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>9</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=siamphone.com">siamphone.com</a>
+                </td>
+                <td class="rankingFilterTable">Technology</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">3528</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.siamphone.com" target="_blank">siamphone.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>10</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=matichon.co.th">matichon.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">3969</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.matichon.co.th" target="_blank">matichon.co.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>11</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=nationtv.tv">nationtv.tv</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">4670</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.nationtv.tv" target="_blank">nationtv.tv</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>12</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=droidsans.com">droidsans.com</a>
+                </td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">4783</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.droidsans.com" target="_blank">droidsans.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>13</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=beartai.com">beartai.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">English</td>
+                <td class="rankingFilterTable">5488</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.beartai.com" target="_blank">beartai.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>14</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=ch7.com">ch7.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">5781</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.ch7.com" target="_blank">ch7.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>15</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=komchadluek.net">komchadluek.net</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">5856</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.komchadluek.net" target="_blank">komchadluek.net</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>16</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=ddproperty.com">ddproperty.com</a>
+                </td>
+                <td class="rankingFilterTable">Business</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">5867</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.ddproperty.com" target="_blank">ddproperty.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>17</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=blognone.com">blognone.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">6264</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.blognone.com" target="_blank">blognone.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>18</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=bangkokbiznews.com">bangkokbiznews.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">6633</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.bangkokbiznews.com" target="_blank">bangkokbiznews.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>19</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=thaipbs.or.th">thaipbs.or.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">English</td>
+                <td class="rankingFilterTable">6642</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.thaipbs.or.th" target="_blank">thaipbs.or.th</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>20</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=siamdara.com">siamdara.com</a>
+                </td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">6768</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.siamdara.com" target="_blank">siamdara.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>21</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=naewna.com">naewna.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">6958</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.naewna.com" target="_blank">naewna.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>22</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=thaimobilecenter.com">thaimobilecenter.com</a>
+                </td>
+                <td class="rankingFilterTable">Technology</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">7416</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.thaimobilecenter.com" target="_blank">thaimobilecenter.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>23</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=thaipost.net">thaipost.net</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">7595</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.thaipost.net" target="_blank">thaipost.net</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>24</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=prachachat.net">prachachat.net</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">7666</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.prachachat.net" target="_blank">prachachat.net</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>25</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=ryt9.com">ryt9.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">8392</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.ryt9.com" target="_blank">ryt9.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>26</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=bectero.com">bectero.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">8912</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.bectero.com" target="_blank">bectero.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>27</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=posttoday.com">posttoday.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">English</td>
+                <td class="rankingFilterTable">9158</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.posttoday.com" target="_blank">posttoday.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>28</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=voicetv.co.th">voicetv.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">9439</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.voicetv.co.th" target="_blank">voicetv.co.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>29</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=springnews.co.th">springnews.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">9905</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.springnews.co.th" target="_blank">springnews.co.th</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>30</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=sanook.com">sanook.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">10763</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.sanook.com" target="_blank">sanook.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>31</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=brandinside.asia">brandinside.asia</a>
+                </td>
+                <td class="rankingFilterTable">Business</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">10884</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.brandinside.asia" target="_blank">brandinside.asia</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>32</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=appdisqus.com">appdisqus.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">English</td>
+                <td class="rankingFilterTable">10924</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.appdisqus.com" target="_blank">appdisqus.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>33</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=aripfan.com">aripfan.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">12165</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.aripfan.com" target="_blank">aripfan.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>34</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=chiangmainews.co.th">chiangmainews.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">12311</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.chiangmainews.co.th" target="_blank">chiangmainews.co.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>35</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=positioningmag.com">positioningmag.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">12315</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.positioningmag.com" target="_blank">positioningmag.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>36</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=innnews.co.th">innnews.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">14413</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.innnews.co.th" target="_blank">innnews.co.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>37</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=newtv.co.th">newtv.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">14564</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.newtv.co.th" target="_blank">newtv.co.th</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>38</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=voathai.com">voathai.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">14748</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.voathai.com" target="_blank">voathai.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>39</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=flashfly.net">flashfly.net</a>
+                </td>
+                <td class="rankingFilterTable">Technology</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">14793</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.flashfly.net" target="_blank">flashfly.net</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>40</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=banmuang.co.th">banmuang.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">15501</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.banmuang.co.th" target="_blank">banmuang.co.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>41</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=autoinfo.co.th">autoinfo.co.th</a>
+                </td>
+                <td class="rankingFilterTable">Business</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">16290</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.autoinfo.co.th" target="_blank">autoinfo.co.th</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>42</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=manager.co.th">manager.co.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">16310</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.manager.co.th" target="_blank">manager.co.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>43</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=gotomanager.com">gotomanager.com</a>
+                </td>
+                <td class="rankingFilterTable">Business</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">18987</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.gotomanager.com" target="_blank">gotomanager.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>44</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=daradaily.com">daradaily.com</a>
+                </td>
+                <td class="rankingFilterTable">Entertainment</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">19165</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.daradaily.com" target="_blank">daradaily.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>45</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=thethaiger.com">thethaiger.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">20205</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.thethaiger.com" target="_blank">thethaiger.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>46</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=tnnthailand.com">tnnthailand.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">21753</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.tnnthailand.com" target="_blank">tnnthailand.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>47</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=siamza.com">siamza.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">21756</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.siamza.com" target="_blank">siamza.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>48</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=prachatai.com">prachatai.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">22132</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.prachatai.com" target="_blank">prachatai.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>49</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=ijube.com">ijube.com</a>
+                </td>
+                <td class="rankingFilterTable">Sports</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">23705</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.ijube.com" target="_blank">ijube.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>50</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=techmoblog.com">techmoblog.com</a>
+                </td>
+                <td class="rankingFilterTable">Technology</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">25595</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.techmoblog.com" target="_blank">techmoblog.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>51</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=thaipr.net">thaipr.net</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">26299</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.thaipr.net" target="_blank">thaipr.net</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>52</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=bangkok-today.com">bangkok-today.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">30585</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.bangkok-today.com" target="_blank">bangkok-today.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>53</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=siamturakij.com">siamturakij.com</a>
+                </td>
+                <td class="rankingFilterTable">Business</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">30794</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.siamturakij.com" target="_blank">siamturakij.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>54</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=benarnews.org">benarnews.org</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">English</td>
+                <td class="rankingFilterTable">33585</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.benarnews.org" target="_blank">benarnews.org</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>55</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=moneyandbanking.co.th">moneyandbanking.co.th</a>
+                </td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">35473</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.moneyandbanking.co.th" target="_blank">moneyandbanking.co.th</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>56</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=health-th.com">health-th.com</a>
+                </td>
+                <td class="rankingFilterTable">Health</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">37118</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.health-th.com" target="_blank">health-th.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>57</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=newsplus.co.th">newsplus.co.th</a>
+                </td>
+                <td class="rankingFilterTable">Entertainment</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">39930</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.newsplus.co.th" target="_blank">newsplus.co.th</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>58</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=motorexpo.co.th">motorexpo.co.th</a>
+                </td>
+                <td class="rankingFilterTable">Business</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">40440</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.motorexpo.co.th" target="_blank">motorexpo.co.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>59</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=phuketindex.com">phuketindex.com</a>
+                </td>
+                <td class="rankingFilterTable">Sports</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">41236</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.phuketindex.com" target="_blank">phuketindex.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>60</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=transbordernews.in.th">transbordernews.in.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">41968</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.transbordernews.in.th" target="_blank">transbordernews.in.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>61</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=lokwannee.com">lokwannee.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">42340</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.lokwannee.com" target="_blank">lokwannee.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>62</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=prdnorth.in.th">prdnorth.in.th</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">42371</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.prdnorth.in.th" target="_blank">prdnorth.in.th</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>63</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=mukdahannews.com">mukdahannews.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">42416</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.mukdahannews.com" target="_blank">mukdahannews.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>64</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=pattayadailynews.com">pattayadailynews.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">42435</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.pattayadailynews.com" target="_blank">pattayadailynews.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>65</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=newswit.com">newswit.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">English</td>
+                <td class="rankingFilterTable">42946</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.newswit.com" target="_blank">newswit.com</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>66</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=thaibusinessnews.com">thaibusinessnews.com</a>
+                </td>
+                <td class="rankingFilterTable">Technology</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">47684</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.thaibusinessnews.com" target="_blank">thaibusinessnews.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>67</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=phuketgazette.net">phuketgazette.net</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">English</td>
+                <td class="rankingFilterTable">48023</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.phuketgazette.net" target="_blank">phuketgazette.net</a>
+                </td>
+            </tr><tr role="row" class="even">
+                <td>68</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=krobkruakao.com">krobkruakao.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">Thai</td>
+                <td class="rankingFilterTable">48562</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.krobkruakao.com" target="_blank">krobkruakao.com</a>
+                </td>
+            </tr><tr role="row" class="odd">
+                <td>69</td>
+                <td class="rankingFilterTable">
+                    <a href="/searchpage?url=siamoops.com">siamoops.com</a>
+                </td>
+                <td class="rankingFilterTable">General</td>
+                <td class="rankingFilterTable">Thailand</td>
+                <td class="rankingFilterTable">N/A</td>
+                <td class="rankingFilterTable">49728</td>
+                <td class="rankingFilterTable">
+                    <a href="https://www.siamoops.com" target="_blank">siamoops.com</a>
+                </td>
+            </tr></tbody></table><div class="dataTables_info" id="rftable_info" role="status" aria-live="polite">Showing 1 to 69 of 69 entries</div><div class="dataTables_paginate paging_simple_numbers" id="rftable_paginate"><a class="paginate_button previous disabled" aria-controls="rftable" data-dt-idx="0" tabindex="0" id="rftable_previous">Previous</a><span><a class="paginate_button current" aria-controls="rftable" data-dt-idx="1" tabindex="0">1</a></span><a class="paginate_button next disabled" aria-controls="rftable" data-dt-idx="2" tabindex="0" id="rftable_next">Next</a></div></div>
+    
+    </div>
+    
+    <div class="footer">
+        <p style="margin-top: 1rem">Copyright © Stony Brook University</p>
+    </div>
+    
+    <!--<script type="text/javascript" src="../static/js/visualization.js"></script>-->
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"-->
+    <!--integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"-->
+    <!--crossorigin="anonymous"></script>-->
+    <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"-->
+    <!--integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"-->
+    <!--crossorigin="anonymous"></script>-->
+    
+    
+    </body>
+</html>

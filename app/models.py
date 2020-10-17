@@ -68,3 +68,22 @@ class Article(db.Model):
     def serialize(self, fields=None):
         fields = [c.name for c in self.__table__.columns] if fields is None else fields
         return {attr: getattr(self, attr) for attr in fields}
+
+class Source(db.Model):
+    __tablename__ = "sources"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    url = db.Column(db.String, unique=True)
+    language = db.Column(db.String)
+    rank = db.Column(db.String, unique=True)
+
+    def populate_from_mr(self, data):
+        self.name = data["name"]
+        self.url = data["url"]
+        self.language = data["language"]
+        self.rank = data["rank"]
+
+    def serialize(self, fields=None):
+        fields = [c.name for c in self.__table__.columns] if fields is None else fields
+        return {attr: getattr(self, attr) for attr in fields}
