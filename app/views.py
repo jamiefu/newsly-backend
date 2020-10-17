@@ -59,6 +59,7 @@ def get_stories():
         article.parse()
         story_json["read_time"] = math.ceil(len(re.findall(r'\w+', article.text))/250)
         story_json["image"] = article.top_image
+        story_json["article_text"] = article.text
         tags = []
         story_tags = story['story_tags']
         for tag in story_tags:
