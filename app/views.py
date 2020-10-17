@@ -9,3 +9,9 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 def articles():
     articles = Article.query.all()
     return jsonify([a.serialize() for a in articles])
+
+@api_bp.route("/clear")
+def clear():
+    Article.query.delete()
+    db.session.commit()
+    return "DB Cleared!"

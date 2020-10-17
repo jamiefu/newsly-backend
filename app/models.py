@@ -49,13 +49,16 @@ class Article(db.Model):
     """
     def __init__(self):
         self.news_metadata = defaultdict(lambda x: None)
+        self.content = defaultdict(lambda x: None)
 
     def populate_from_mc(self, data):
         self.publish_date = data['publish_date']
         self.title = data['title']
         self.url = data['url']
-
         self.news_metadata['tags'] = data['tags']
+        self.news_metadata['read_time'] = data['read_time']
+        self.content['description'] = data['description']
+        self.content['image'] = data['image']
 
     def get_twitter_metadata(self):
         s = Search()
