@@ -1,5 +1,7 @@
 import mediacloud.api
 import datetime
+import re
+import math
 from flask import Flask, request, jsonify, Blueprint
 from app import db
 from app.models import Article
@@ -7,7 +9,6 @@ from app.models import Article
 mc_news_bp = Blueprint("mc_news",__name__, url_prefix="/mc_news")
 from bs4 import BeautifulSoup
 
-from flask import Flask, request, jsonify
 from newspaper import Article
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ mc = mediacloud.api.MediaCloud(API_KEY)
 query = "language:en AND tags_id_media:34412328"
 
 fetch_size = 10
+
 
 @mc_news_bp.route("/stories", methods=["GET"])
 def get_stories():
@@ -38,6 +40,9 @@ def get_stories():
         soup = BeautifulSoup(article.html, 'html.parser')
         description = soup.find("meta", property="og:description")['content']
         story_json["description"] = description
+        article.parse()
+        story_json["read_time"] = math.ceil(len(re.findall(r'\w+', article.text))/250)
+        story_json["image"] = article.top_image
         tags = []
         story_tags = story['story_tags']
         for tag in story_tags:
