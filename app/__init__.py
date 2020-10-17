@@ -15,10 +15,9 @@ def create_app():
     global app, db
     app = Flask(__name__)
 
-    config_file = "../config.py"
     #load main config
-    if os.path.exists(config_file):
-        app.config.from_pyfile(config_file)
+    if os.path.exists("config.py"):
+        app.config.from_pyfile("../config.py")
     else:
         load_from_env(app, 'SQLALCHEMY_DATABASE_URI',
                                     'DEBUG') 
