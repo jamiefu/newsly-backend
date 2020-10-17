@@ -20,7 +20,7 @@ def create_app():
     if os.path.exists(config_file):
         app.config.from_pyfile(config_file)
     else:
-        load_from_env(application, 'SQLALCHEMY_DATABASE_URI',
+        load_from_env(app, 'SQLALCHEMY_DATABASE_URI',
                                     'DEBUG') 
 
     # #load instance config
