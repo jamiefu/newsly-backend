@@ -1,0 +1,2 @@
+SQLALCHEMY_DATABASE_URI="postgres:///hackgt2020"
+DEBUG=True

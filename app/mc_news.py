@@ -1,10 +1,10 @@
 import mediacloud.api
 import datetime
+from flask import Flask, request, jsonify, Blueprint
+from app import db
+from app.models import Article
 
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
-app.config["DEBUG"] = True
+mc_news_bp = Blueprint("mc_news",__name__, url_prefix="/mc_news")
 
 API_KEY = "0f789c2e1db3dc5aa6632d142df870b550a07334e57bd54726d6a762cf725ab9"
 
@@ -14,7 +14,7 @@ query = "language:en AND tags_id_media:34412328"
 
 fetch_size = 10
 
-@app.route("/stories", methods=["GET"])
+@mc_news_bp.route("/stories", methods=["GET"])
 def get_stories():
     rows = request.args.get("n") # number of articles you want back
 
@@ -36,7 +36,20 @@ def get_stories():
         story_json["tags"] = tags
         stories["stories"].append(story_json)
 
+        if not Article.query.filter_by(title=story_json["title"]).all():
+            new_article = Article()
+            new_article.populate_from_mc(story_json)
+            new_article.get_twitter_metadata()
+            db.session.add(new_article)
+            db.session.commit()
+            print(f"Added story: {story_json['title']}\n")
+        else:
+            print(f"Skipping Duplicate: {story_json['title']}")
+
+        
+
     return jsonify(stories)
 
 if __name__ == "__main__":
+    from app import app
     app.run()
