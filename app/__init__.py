@@ -6,12 +6,22 @@ from flask_sqlalchemy import SQLAlchemy
 app = None
 db = None
 
+def load_from_env(app, *args):
+    for a in args:
+        app.config[a] = os.environ[a]
+
+
 def create_app():
     global app, db
     app = Flask(__name__)
 
+    config_file = "../config.py"
     #load main config
-    app.config.from_pyfile('../config.py') 
+    if os.path.exists(config_file):
+        app.config.from_pyfile(config_file)
+    else:
+        load_from_env(application, 'SQLALCHEMY_DATABASE_URI',
+                                    'DEBUG') 
 
     # #load instance config
     # if os.path.exists(application.instance_path + "/config.py"):
