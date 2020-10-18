@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 from collections import defaultdict
 import requests
+from app.utils import political_sentiment 
 
 class Search:
     def __init__(self):
@@ -63,6 +64,7 @@ class Article(db.Model):
         self.content['description'] = data['description']
         self.content['image'] = data['image']
         self.content['favicon'] = data['favicon']
+        self.content['text'] = data['article_text']
 
     def get_twitter_metadata(self):
         s = Search()
@@ -71,6 +73,26 @@ class Article(db.Model):
         self.news_metadata["twitter_local"] = local
         print(f"Retrieved Twitter metadata (Local: {len(local)}, Global: {len(all)})")
         return all, local
+
+    def run_political_sentiment(self):
+        if self.content['text']:
+            text = self.content['text']
+        elif self.content['description']:
+            text = self.content['description']
+        else:
+            text = self.title
+        n, total, sentiment = political_sentiment(text)
+        self.news_metadata['political_sents'] = n
+        self.news_metadata['total_sents'] = total
+        self.news_metadata['political_sentiment'] = sentiment
+
+    def match_source(self):
+        sources = Source.query.all()
+        for s in sources:
+            if s.match(self.news_metadata['source_url']):
+                self.news_metadata["source_id"] = s.id
+                print(f"Source found for {self.title}:\n{s.name}")
+                break
 
     def serialize(self, fields=None):
         fields = [c.name for c in self.__table__.columns] if fields is None else fields
@@ -98,6 +120,9 @@ class Source(db.Model):
         self.popularity = data["popularity"]
         self.breadth = data["breadth"]
         self.bias = data["bias"]
+
+    def match(self, url):
+        return self.name in url
 
     def serialize(self, fields=None):
         fields = [c.name for c in self.__table__.columns] if fields is None else fields

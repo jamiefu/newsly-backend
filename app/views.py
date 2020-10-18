@@ -11,7 +11,7 @@ import requests
 import math
 from bs4 import BeautifulSoup
 from newspaper import Article as article_api
-
+from app.rankings import generate_ranking
 
 API_KEY = "1079fb0a4dddf53604c65f2583952b4473bc7c11697299bd5c89eaf3e6b4ffd9"
 mc = mediacloud.api.MediaCloud(API_KEY)
@@ -28,7 +28,8 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 @api_bp.route("/articles")
 def articles():
     articles = Article.query.all()
-    return jsonify([a.serialize() for a in articles])
+    ranked_list = generate_ranking(articles)
+    return jsonify([a[1] for a in ranked_list])
 
 @api_bp.route("/clear")
 def clear():
@@ -85,18 +86,21 @@ def _load_mc_stories(rows=None):
         new_article = Article()
         new_article.populate_from_mc(story_json)
         new_article.get_twitter_metadata()
+        new_article.run_political_sentiment()
+        new_article.match_source()
         db.session.add(new_article)
         db.session.commit()
         print(f"Added story: {story_json['title']}\n")
 
     return jsonify(fetched_stories)
 
+@api_bp.route("/load_sources")
 def _populate_ranks():
     existing_sources = Source.query.all()
 
     existing_urls = set(source.url for source in existing_sources)
 
-    with open("../thailand.html") as mr:
+    with open("./thailand.html") as mr:
         page = mr.read()
         soup = BeautifulSoup(page, 'html.parser')
 
