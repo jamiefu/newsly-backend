@@ -1,21 +1,24 @@
 from app.models import Source, Article
 from datetime import datetime, timedelta
+import csv
+from collections import defaultdict
+
 SRC_MULTS = {"rank":1.5,"reputation":1,"popularity":1, "breadth":0.5, "bias":-1}
-FACTORS_MULTS = {"source":0.7, "twitter":0.1,"political":0.2}
+FACTORS_MULTS = {"source":0.6, "twitter":0.1,"political":0.3}
 # TWITTER_MULT = 1
 TWITTER_RATIO_BONUS = 0.5
 TWITTER_RATIO = 0.4
 
-POLITICAL_BONUS = 0.5
+POLITICAL_BONUS = 0.8
 POLITICAL_SENTIMENT = -0.2
 
-TIME_DECAY = 1.5
+TIME_DECAY = 0.5
 
 metrics = ["rank","reputation","popularity", "breadth", "bias"]
 
 
 def decay_fn(time):
-    days_since =  (datetime(2020, 10, 18, 6, 11, 29, 219333)- time).seconds / (3600 * 24)
+    days_since =  (datetime.now() - time).total_seconds() / (3600 * 24)
     ans =  1/(1+days_since)**TIME_DECAY
     return ans 
 
@@ -31,9 +34,11 @@ def generate_ranking(articles):
     print(src_metrics)
     max_twitter = max([len(a["news_metadata"]["twitter_all"]) for a in articles if "twitter_all" in a["news_metadata"] ])
     scores = {a["id"]:0 for a in articles}
+    running_scores = {a["id"]:{} for a in articles}
+
     for a in articles:
         metadata = a["news_metadata"]
-        running_score = {}
+        running_score = defaultdict(lambda: "")
         if "source_id" in a["news_metadata"]:
             total = 0
             src_score = 0
@@ -46,6 +51,7 @@ def generate_ranking(articles):
                     total += mult
                     src_score += mult * perc
             running_score["source"] = src_score / total if total > 0 else 0
+            a["source_metrics"] = src_metrics[a["news_metadata"]["source_id"]]
 
         if len(metadata["twitter_all"]) > 3:
             # total = TWITTER_MULT
@@ -69,9 +75,15 @@ def generate_ranking(articles):
             final_score += FACTORS_MULTS[factor] * score
             # total += FACTORS_MULTS[factor]
         scores[a["id"]] = final_score * decay_fn(a["publish_date"]) # / total if total > 0 else 0
-        print(decay_fn(a["publish_date"]), final_score, running_score, a["title"])
+        print(decay_fn(a["publish_date"]),final_score, running_score, a["title"])
+        running_scores[a["id"]] = running_score
     ranked_list = sorted([(scores[a["id"]], a) for a in articles], reverse=True, key=lambda x: x[0])
     print([(a[0],a[1]["title"]) for a in ranked_list])
+    # with open("rankings_breakdown.csv","w") as f:
+    #     writer = csv.writer(f)
+    #     for score, a in ranked_list:
+    #         sc = running_scores[a["id"]]
+    #         writer.writerow([score, a["title"], a["url"], a["publish_date"], a["news_metadata"]["source_name"], sc["source"], sc["political"], sc["twitter"], decay_fn(a["publish_date"])])
     return ranked_list
 
 

@@ -46,7 +46,7 @@ def fetch_stories():
 def _load_mc_stories(rows=None):
     pull_freq = app.config["PULL_FREQ"]
 
-    fetched_stories = mc.storyList(query, solr_filter=mc.dates_as_query_clause(datetime.datetime.now() - datetime.timedelta(seconds=pull_freq), datetime.datetime.now()),
+    fetched_stories = mc.storyList(query, solr_filter=mc.dates_as_query_clause(datetime.datetime.now() - datetime.timedelta(seconds=pull_freq) -datetime.timedelta(days=3), datetime.datetime.now()-datetime.timedelta(days=3)),
                                     rows=rows)
     stories = {"query": query, "stories": []}
     for story in fetched_stories:
