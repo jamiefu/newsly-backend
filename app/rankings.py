@@ -15,7 +15,7 @@ metrics = ["rank","reputation","popularity", "breadth", "bias"]
 
 
 def decay_fn(time):
-    days_since = (datetime.now() - time).seconds / (3600 * 24)
+    days_since =  (datetime.now() - time).seconds / (3600 * 24)
     ans =  1/(1+days_since)**TIME_DECAY
     return ans 
 
@@ -28,7 +28,7 @@ def generate_ranking(articles):
     sources = [a["news_metadata"]["source_id"] for a in articles if "source_id" in a["news_metadata"]]
     sources = Source.query.filter(Source.id.in_(set(sources))).all()
     src_metrics = get_src_metrics(sources)
-
+    print(src_metrics)
     max_twitter = max([len(a["news_metadata"]["twitter_all"]) for a in articles if "twitter_all" in a["news_metadata"] ])
     scores = {a["id"]:0 for a in articles}
     for a in articles:
@@ -69,7 +69,7 @@ def generate_ranking(articles):
             final_score += FACTORS_MULTS[factor] * score
             # total += FACTORS_MULTS[factor]
         scores[a["id"]] = final_score * decay_fn(a["publish_date"]) # / total if total > 0 else 0
-        print(final_score, running_score, a["title"])
+        print(decay_fn(a["publish_date"]), final_score, running_score, a["title"])
     ranked_list = sorted([(scores[a["id"]], a) for a in articles], reverse=True, key=lambda x: x[0])
     print([(a[0],a[1]["title"]) for a in ranked_list])
     return ranked_list
