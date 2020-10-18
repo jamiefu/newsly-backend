@@ -2,10 +2,12 @@ import datetime
 from flask import Flask, request, jsonify, Blueprint
 from app import db
 from app.models import Article
+from app.models import Source
 from app import app
 import mediacloud.api
 import datetime
 import re
+import requests
 import math
 from bs4 import BeautifulSoup
 from newspaper import Article as article_api
@@ -15,6 +17,11 @@ API_KEY = "1079fb0a4dddf53604c65f2583952b4473bc7c11697299bd5c89eaf3e6b4ffd9"
 mc = mediacloud.api.MediaCloud(API_KEY)
 query = "language:en AND tags_id_media:34412328"
 fetch_size = 10
+
+base_search = "http://media-rank.com"
+
+rank_types = {"PR_RNK": "reputation", "Alexa_RNK": "popularity", 
+    "Breadth_RNK": "breadth", "Bias_RNK": "bias"}
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -83,3 +90,57 @@ def _load_mc_stories(rows=None):
         print(f"Added story: {story_json['title']}\n")
 
     return jsonify(fetched_stories)
+
+def _populate_ranks():
+    existing_sources = Source.query.all()
+
+    existing_urls = set(source.url for source in existing_sources)
+
+    with open("../thailand.html") as mr:
+        page = mr.read()
+        soup = BeautifulSoup(page, 'html.parser')
+
+        table = soup.find('table', id='rftable').find_all('tr')
+
+        sources = []
+        
+        for i,row in enumerate(table):
+            values = row.find_all('td')
+            if len(values) == 7:
+                source_dict = {}
+                for i,value in enumerate(values):
+                    if value.a and value.a["href"].startswith('/'):
+                        source_dict["name"] = value.text.replace("\n", "")
+                        source_dict = get_aux_ranks(source_dict, value.a["href"])
+                    elif value.a:
+                        source_dict["url"] = value.a["href"]
+                    elif i == 4:
+                        source_dict["language"] = value.text
+                    elif i == 5 and int(value.text):
+                        source_dict["rank"] = value.text
+                    else:
+                        pass
+                if len(source_dict) == 8 and source_dict["url"] not in existing_urls:
+                    new_source = Source()
+                    new_source.populate_from_mr(source_dict)
+                    db.session.add(new_source)
+                    db.session.commit()
+                    sources.append(source_dict)
+                    print(f"Added source: {source_dict}")
+        print(f"Added {len(sources)} sources to table")
+
+    return jsonify({"sources": sources})
+
+def get_aux_ranks(source_dict, source_link):
+    source_page = requests.get(f"{base_search}{source_link}")
+    soup = BeautifulSoup(source_page.content, 'html.parser')
+
+    ranks = soup.find_all('div', class_="websiteRanks-valueContainer js-websiteRanksValue rankStyle")
+
+    for rank in ranks:
+        try:
+            source_dict[rank_types[rank["id"]]] = int(rank.text)
+        except:
+            source_dict[rank_types[rank["id"]]] = None
+    
+    return source_dict

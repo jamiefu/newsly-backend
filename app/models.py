@@ -84,12 +84,20 @@ class Source(db.Model):
     url = db.Column(db.String, unique=True)
     language = db.Column(db.String)
     rank = db.Column(db.String, unique=True)
+    reputation = db.Column(db.String, unique=True)
+    popularity = db.Column(db.String, unique=True)
+    breadth = db.Column(db.String, unique=True)
+    bias = db.Column(db.String, unique=True)
 
     def populate_from_mr(self, data):
         self.name = data["name"]
         self.url = data["url"]
         self.language = data["language"]
         self.rank = data["rank"]
+        self.reputation = data["reputation"]
+        self.popularity = data["popularity"]
+        self.breadth = data["breadth"]
+        self.bias = data["bias"]
 
     def serialize(self, fields=None):
         fields = [c.name for c in self.__table__.columns] if fields is None else fields
