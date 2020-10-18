@@ -25,10 +25,32 @@ rank_types = {"PR_RNK": "reputation", "Alexa_RNK": "popularity",
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
+
+RANKING_PARAMS = {
+    "SRC_RANK":1.5,
+    "SRC_REP": 1,
+    "SRC_POP": 1,
+    "SRC_BREADTH": 0.5,
+    "SRC_BIAS": -1,
+    "FACTOR_SOURCE":0.6,
+    "FACTOR_TWITTER":0.1,
+    "FACTOR_POLITICAL":0.3,
+    "TWITTER_RATIO_BONUS":0.5,
+    "TWITTER_RATIO":0.4,
+    "POLITICAL_BONUS" : 0.8,
+    "POLITICAL_SENTIMENT" : -0.2,
+    "TIME_DECAY": 0.5,
+}
+
+
 @api_bp.route("/articles")
 def articles():
+    for key, val in request.args.items():
+        if key in RANKING_PARAMS:
+            RANKING_PARAMS[key] = float(val)
+
     articles = Article.query.all()
-    ranked_list = generate_ranking(articles)
+    ranked_list = generate_ranking(articles, RANKING_PARAMS)
     return jsonify([a[1] for a in ranked_list])
 
 @api_bp.route("/clear")

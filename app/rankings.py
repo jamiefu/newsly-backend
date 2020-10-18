@@ -3,30 +3,23 @@ from datetime import datetime, timedelta
 import csv
 from collections import defaultdict
 
-SRC_MULTS = {"rank":1.5,"reputation":1,"popularity":1, "breadth":0.5, "bias":-1}
-FACTORS_MULTS = {"source":0.6, "twitter":0.1,"political":0.3}
-# TWITTER_MULT = 1
-TWITTER_RATIO_BONUS = 0.5
-TWITTER_RATIO = 0.4
-
-POLITICAL_BONUS = 0.8
-POLITICAL_SENTIMENT = -0.2
-
-TIME_DECAY = 0.5
 
 metrics = ["rank","reputation","popularity", "breadth", "bias"]
 
 
-def decay_fn(time):
+def decay_fn(time, decay):
     days_since =  (datetime.now() - time).total_seconds() / (3600 * 24)
-    ans =  1/(1+days_since)**TIME_DECAY
+    ans =  1/(1+days_since)**decay
     return ans 
 
 def sent_fn(a, x):
     ans = 1 / (1 + abs(a - 4 * x))**3
     return ans 
 
-def generate_ranking(articles):
+def generate_ranking(articles, P):
+    SRC_MULTS = {"rank":P["SRC_RANK"],"reputation":P["SRC_REP"],"popularity":P["SRC_POP"], "breadth":P["SRC_BREADTH"], "bias":P["SRC_BIAS"]}
+    FACTORS_MULTS = {"source":P["FACTOR_SOURCE"], "twitter":P["FACTOR_TWITTER"],"political":P["FACTOR_POLITICAL"]}
+
     articles = [a.serialize() for a in articles]
     sources = [a["news_metadata"]["source_id"] for a in articles if "source_id" in a["news_metadata"]]
     sources = Source.query.filter(Source.id.in_(set(sources))).all()
@@ -57,13 +50,13 @@ def generate_ranking(articles):
             # total = TWITTER_MULT
             score = (len(metadata["twitter_all"]) / max_twitter)
             ratio = len(metadata["twitter_local"])/len(metadata["twitter_all"])
-            if ratio < TWITTER_RATIO:
-                score += TWITTER_RATIO_BONUS * (1 - score)
+            if ratio < P["TWITTER_RATIO"]:
+                score += P["TWITTER_RATIO_BONUS"] * (1 - score)
             running_score["twitter"] = score
 
         if metadata["political_sents"] > 0:
-            score = sent_fn(POLITICAL_SENTIMENT, metadata["political_sentiment"]["comp"])
-            score += POLITICAL_BONUS * (1 - score)
+            score = sent_fn(P["POLITICAL_SENTIMENT"], metadata["political_sentiment"]["comp"])
+            score += P["POLITICAL_BONUS"] * (1 - score)
             running_score["political"] = score
 
 
@@ -74,8 +67,8 @@ def generate_ranking(articles):
         for factor, score in running_score.items():
             final_score += FACTORS_MULTS[factor] * score
             # total += FACTORS_MULTS[factor]
-        scores[a["id"]] = final_score * decay_fn(a["publish_date"]) # / total if total > 0 else 0
-        print(decay_fn(a["publish_date"]),final_score, running_score, a["title"])
+        scores[a["id"]] = final_score * decay_fn(a["publish_date"], P["TIME_DECAY"]) # / total if total > 0 else 0
+        print(decay_fn(a["publish_date"], P["TIME_DECAY"]),final_score, running_score, a["title"])
         running_scores[a["id"]] = running_score
     ranked_list = sorted([(scores[a["id"]], a) for a in articles], reverse=True, key=lambda x: x[0])
     print([(a[0],a[1]["title"]) for a in ranked_list])
