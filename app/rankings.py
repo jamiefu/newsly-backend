@@ -15,7 +15,7 @@ metrics = ["rank","reputation","popularity", "breadth", "bias"]
 
 
 def decay_fn(time):
-    days_since =  (datetime.now() - time).seconds / (3600 * 24)
+    days_since =  (datetime(2020, 10, 18, 6, 11, 29, 219333)- time).seconds / (3600 * 24)
     ans =  1/(1+days_since)**TIME_DECAY
     return ans 
 
